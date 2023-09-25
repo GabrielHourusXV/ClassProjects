@@ -1,0 +1,116 @@
+/*
+  This Arduino code is designed to control a robot with three sensors.
+  The sensors are connected to pins 10, 4, and 2, respectively.
+  
+  The robot's movements are based on sensor readings as follows:
+  - If all three sensors detect LOW, the robot stops.
+  - If the center sensor (sensorPin2) detects LOW, the robot moves forward.
+  - If all three sensors detect HIGH, the robot checks its last direction:
+    - If it previously moved forward, it turns left.
+    - If it previously turned right, it turns right again.
+  - If the left sensor (sensorPin1) detects HIGH, the robot turns left and updates its last direction.
+  - If the right sensor (sensorPin3) detects HIGH, the robot turns right and updates its last direction.
+  
+  The robot's motor controls and directions are configured in functions:
+  - detener(): Stops all motors.
+  - moverAdelante(): Moves the robot forward.
+  - girarIzquierda(): Turns the robot left.
+  - girarDerecha(): Turns the robot right.
+  
+  This code is a simple example of sensor-based robot control and can be a useful starting point for your robotics projects.
+*/
+
+int sensorPin1 = 10;
+int sensorPin2 = 4;
+int sensorPin3 = 2;
+
+int ultimaDireccion = 1;
+
+void setup()
+{
+  pinMode(11, OUTPUT);
+  pinMode(9, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(7, OUTPUT);
+
+  pinMode(sensorPin1, INPUT);
+  pinMode(sensorPin2, INPUT);
+  pinMode(sensorPin3, INPUT);
+}
+
+void loop()
+{
+  int lecturaSensor1 = digitalRead(sensorPin1);
+  int lecturaSensor2 = digitalRead(sensorPin2);
+  int lecturaSensor3 = digitalRead(sensorPin3);
+
+  if (lecturaSensor1 == LOW && lecturaSensor2 == LOW && lecturaSensor3 == LOW)
+  {
+    detener();
+  }
+  else if (lecturaSensor2 == LOW)
+  {
+    moverAdelante();
+  }
+  else if (lecturaSensor1 == HIGH && lecturaSensor2 == HIGH && lecturaSensor3 == HIGH)
+  {
+    if (ultimaDireccion == 1)
+    {
+      girarIzquierda();
+    }
+    else
+    {
+      girarDerecha();
+    }
+  }
+  else if (lecturaSensor1 == HIGH)
+  {
+    girarIzquierda();
+    ultimaDireccion = 1;
+  }
+  else if (lecturaSensor3 == HIGH)
+  {
+    girarDerecha();
+    ultimaDireccion = 2;
+  }
+}
+
+void detener()
+{
+  digitalWrite(6, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(9, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(7, LOW);
+  digitalWrite(5, LOW);
+}
+
+void moverAdelante()
+{
+  analogWrite(6, 245);
+  digitalWrite(11, HIGH);
+  digitalWrite(9, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(7, HIGH);
+  analogWrite(5, 245);
+}
+
+void girarIzquierda()
+{
+  analogWrite(6, 190);
+  digitalWrite(11, HIGH);
+  digitalWrite(9, LOW);
+  digitalWrite(8, HIGH);
+  digitalWrite(7, LOW);
+  analogWrite(5, 190);
+}
+
+void girarDerecha()
+{
+  analogWrite(6, 190);
+  digitalWrite(11, LOW);
+  digitalWrite(9, HIGH);
+  digitalWrite(8, LOW);
+  digitalWrite(7, HIGH);
+  analogWrite(5, 190);
+}
